@@ -2,5 +2,7 @@
     <string name="app_name">Zeitfaden</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="hello_map">Hello map!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_show_map">ShowMap</string>
 </resources>
