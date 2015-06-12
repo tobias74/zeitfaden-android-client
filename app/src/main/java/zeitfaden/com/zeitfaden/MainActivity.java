@@ -42,4 +42,10 @@ public class MainActivity extends ActionBarActivity {
         final Intent intent = new Intent(this, ShowMapActivity.class);
         startActivity(intent);
     }
+
+    public void onClickShowTest(View Button){
+        final Intent intent = new Intent(this, TestActivity.class);
+        startActivity(intent);
+    }
+
 }
