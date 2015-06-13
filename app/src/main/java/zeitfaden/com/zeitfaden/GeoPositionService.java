@@ -15,19 +15,23 @@ import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailed
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
-public class GeoPositionService extends Service implements LocationListener, ConnectionCallbacks, OnConnectionFailedListener {
+public class GeoPositionService extends Service implements LocationListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private Location myLocation;
     private Handler activityCallbackHandler;
 
     public final IBinder mGpsBinder = new GeoPositionServiceBinder();
 
-    private LocationClient mLocationClient;
+    private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+
     private static final long UPDATE_INTERVAL = 5000; // 5 Sekunden
     private static final long SCHNELLSTES_INTERVAL = 1000; // 1 Sekunde
 
@@ -61,39 +65,49 @@ public class GeoPositionService extends Service implements LocationListener, Con
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("Tobias","location service created.");
+        Log.d("Tobias", "location service created.");
 
-        boolean usePlayService = isGooglePlayServiceAvailable();
-        if (usePlayService) {
-            Log.i("TOBIAS", "onCreate(): verwende die neue Location API mit dem Fuse-Provider");
-            startGeoProvider();
-            if (mLocationClient != null) {
-                mLocationClient.connect();
-            }
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
-        }
+        mGoogleApiClient.connect();
 
     }
 
-
     @Override
     public void onDestroy() {
-        if (mLocationClient != null) {
-            mLocationClient.disconnect();
-        }
+        mGoogleApiClient.disconnect();
         super.onDestroy();
     }
 
 
+    @Override
+    public void onConnected(Bundle bundle) {
 
-    private void startGeoProvider(){
-        Log.d("Tobias","inside startGeoProvider");
-        mLocationClient = new LocationClient(this,this,this);
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(SCHNELLSTES_INTERVAL);
+        mLocationRequest.setInterval(1000); // Update location every second
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
     }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i("TOBIAS", "GoogleApiClient connection has been suspend");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i("TOBIAS", "GoogleApiClient connection has failed");
+    }
+
+
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -122,35 +136,10 @@ public class GeoPositionService extends Service implements LocationListener, Con
 
     }
 
-    private boolean isGooglePlayServiceAvailable() {
-        int errorCode = GooglePlayServicesUtil
-                .isGooglePlayServicesAvailable(this);
-        if (errorCode != ConnectionResult.SUCCESS) {
-            return false;
-        }
-        return true;
-    }
 
 
-    @Override
-    public void onConnectionFailed(ConnectionResult arg0) {
-        // TODO Auto-generated method stub
-        Log.d("Tobias","connection failed to locationthingy.");
 
-    }
 
-    @Override
-    public void onConnected(Bundle arg0) {
-        Log.d("Tobias","onConnected here in the geopostion srvice, now requesting location updates.");
-        myLocation = mLocationClient.getLastLocation();
-        mLocationClient.requestLocationUpdates(mLocationRequest, this);
-    }
-
-    @Override
-    public void onDisconnected() {
-        // TODO Auto-generated method stub
-
-    }
 
 
 }

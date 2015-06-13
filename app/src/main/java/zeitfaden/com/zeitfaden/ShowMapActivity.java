@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 
 import java.lang.ref.WeakReference;
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -36,14 +38,9 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 
-
-public class ShowMapActivity extends ActionBarActivity {
+public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCallback {
 
     private static Handler myGeoCallbackHandler;
-    private static final float DEFAULT_ZOOM_LEVEL = 17.5f;
-
-    private MapView mMapView;
-    private GoogleMap mMap;
 
     private ServiceConnection mGeoPositionServiceConnection = new ServiceConnection(){
         public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -53,53 +50,14 @@ public class ShowMapActivity extends ActionBarActivity {
         public void onServiceDisconnected(ComponentName className){}
     };
 
-    private boolean isGooglePlayServiceAvailable() {
-        int errorCode = GooglePlayServicesUtil
-                .isGooglePlayServicesAvailable(this);
-        if (errorCode != ConnectionResult.SUCCESS) {
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
-                    errorCode, this, -1);
-            if (errorDialog != null) {
-                errorDialog.show();
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public void onMapReady(GoogleMap map) {
+        Log.d("Tobias","onMapReady!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Creating Marker now.");
+        map.addMarker(new MarkerOptions()
+                .position(new LatLng(0, 0))
+                .title("Marker"));
     }
-    private void initMapView() {
-        Log.d("TOBIAS", "initMapView(): aufgerufen...");
 
-        boolean usePlayService = isGooglePlayServiceAvailable();
-        if (usePlayService) {
-            MapsInitializer.initialize(this);
-
-            if (mMap == null) {
-                mMap = mMapView.getMap();
-                if (mMap != null) {
-                    Log.d("TOBIAS", "initMapView(): MapView initialisieren");
-                    mMap.getUiSettings().setZoomControlsEnabled(true);
-                    mMap.getUiSettings().setCompassEnabled(true);
-                    mMap.setMyLocationEnabled(true);
-                    //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    mMap.setIndoorEnabled(true);
-                    mMap.setTrafficEnabled(true);
-
-                    CameraUpdate camPos = CameraUpdateFactory.newLatLng(new LatLng(11.562276,104.920292));
-                    mMap.moveCamera(camPos);
-                    Log.d("TOBIAS", "initMapView(): MaxZoomLevel: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" + mMap.getMaxZoomLevel());
-
-                    //mMap.setOnMarkerClickListener(this);
-                    //mMap.setOnCameraChangeListener(this);
-
-                    // Default-Zoomlevel:
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
-                }
-            }
-        } else {
-            finish();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,13 +65,12 @@ public class ShowMapActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_show_map);
 
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         myGeoCallbackHandler = new ShowMapCallbackHandler(this);
 
-        mMapView = (MapView) findViewById(R.id.mv_show_map);
-        mMapView.onCreate(savedInstanceState);
 
-        initMapView();
 
 
         final Intent geoIntent = new Intent(this, GeoPositionService.class);
@@ -152,7 +109,9 @@ public class ShowMapActivity extends ActionBarActivity {
     }
 
     public void handleMessage(Message msg) {
-        Log.d("TOPBIAS", "ja hier im Callback in der show map");
+        final Bundle bundle = msg.getData();
+        final Location location = (Location) bundle.get("location");
+        Log.d("TOBIAS","Dies ist die Location " + location.toString());
 
         /*
         final Bundle bundle = msg.getData();
