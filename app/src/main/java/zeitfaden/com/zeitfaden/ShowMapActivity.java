@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCallback {
 
     private static Handler myGeoCallbackHandler;
+    private DatabaseManager myDatabaseManager;
 
     private ServiceConnection mGeoPositionServiceConnection = new ServiceConnection(){
         public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -75,6 +77,10 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
         final Intent geoIntent = new Intent(this, GeoPositionService.class);
         bindService(geoIntent, mGeoPositionServiceConnection, Context.BIND_AUTO_CREATE);
+
+
+        Log.d("Tobias", "short before the get instance method inside show map acitivty.");
+        myDatabaseManager = DatabaseManager.getInstance(this);
 
     }
 
@@ -112,6 +118,11 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         final Bundle bundle = msg.getData();
         final Location location = (Location) bundle.get("location");
         Log.d("TOBIAS","Dies ist die Location " + location.toString());
+        Station myStation = new Station();
+        myStation.setDescription("Hello Dude.");
+
+        myDatabaseManager.storeStation(myStation);
+
 
         /*
         final Bundle bundle = msg.getData();
