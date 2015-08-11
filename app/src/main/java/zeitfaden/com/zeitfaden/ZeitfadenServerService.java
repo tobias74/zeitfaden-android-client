@@ -3,6 +3,7 @@ package zeitfaden.com.zeitfaden;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -31,6 +32,7 @@ public class ZeitfadenServerService extends IntentService {
     private static final String ACTION_FOO = "zeitfaden.com.zeitfaden.action.FOO";
     private static final String ACTION_BAZ = "zeitfaden.com.zeitfaden.action.BAZ";
     private static final String ACTION_UPLOAD = "zeitfaden.com.zeitfaden.action.UPLOAD";
+    private static final String ACTION_LOGIN_AND_UPLOAD = "zeitfaden.com.zeitfaden.action.LOGIN_AND_UPLOAD";
 
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "zeitfaden.com.zeitfaden.extra.PARAM1";
@@ -79,6 +81,15 @@ public class ZeitfadenServerService extends IntentService {
 
     }
 
+    public static void startActionLoginAndUpload(Context context, String email, String password){
+        Intent intent = new Intent(context, ZeitfadenServerService.class);
+        intent.setAction(ACTION_LOGIN_AND_UPLOAD);
+        intent.putExtra("email", email);
+        intent.putExtra("password",password);
+        context.startService(intent);
+
+    }
+
 
     public ZeitfadenServerService() {
         super("ZeitfadenServerService");
@@ -98,6 +109,8 @@ public class ZeitfadenServerService extends IntentService {
                 handleActionBaz(param1, param2);
             } else if (ACTION_UPLOAD.equals(action)) {
                 handleActionUpload();
+            } else if (ACTION_LOGIN_AND_UPLOAD.equals(action)) {
+                handleActionLoginAndUpload(intent.getStringExtra("email"), intent.getStringExtra("password"));
             }
         }
     }
@@ -119,6 +132,13 @@ public class ZeitfadenServerService extends IntentService {
         // TODO: Handle action Baz
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
+    private void handleActionLoginAndUpload(String email, String password){
+        Log.d("Tobias", "trying to login and upload here.");
+        Log.d("Tobias", "this is what we got" + email + " and " + password);
+
+    }
+
 
     private void handleActionUpload(){
 

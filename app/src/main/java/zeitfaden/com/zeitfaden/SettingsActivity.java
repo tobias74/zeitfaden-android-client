@@ -1,9 +1,12 @@
 package zeitfaden.com.zeitfaden;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 
 public class SettingsActivity extends ActionBarActivity {
@@ -35,4 +38,18 @@ public class SettingsActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void onClickLogin(View button) {
+
+        final EditText editTextEmail = (EditText) findViewById(R.id.settings_input_email);
+        final String email = editTextEmail.getText().toString();
+
+        final EditText editTextPassword = (EditText) findViewById(R.id.settings_input_password);
+        final String password = editTextPassword.getText().toString();
+
+
+        ZeitfadenServerService.startActionLoginAndUpload(this, email, password);
+
+    }
+
 }

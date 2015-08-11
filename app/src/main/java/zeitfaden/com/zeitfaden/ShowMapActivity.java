@@ -139,7 +139,7 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         currentTimestamp = System.currentTimeMillis()/1000;
 
         Station myStation = new Station();
-        myStation.setDescription("#radtour #grandesalpes");
+        myStation.setDescription("#newapp");
         myStation.setStartLatitude(previousLatitude);
         myStation.setStartLongitude(previousLongitude);
         myStation.setEndLatitude(location.getLatitude());

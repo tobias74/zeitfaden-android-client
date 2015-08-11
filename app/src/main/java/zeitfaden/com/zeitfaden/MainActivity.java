@@ -61,6 +61,11 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    public void onClickSettings(View Button){
+        final Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     public void onClickUploadStations(View Button){
         ZeitfadenServerService.startActionUpload(this);
     }

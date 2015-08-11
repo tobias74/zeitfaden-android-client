@@ -33,11 +33,21 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Settings"
+        android:onClick="onClickSettings"
+        android:id="@+id/buttonSettings"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="272dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Upload Stations"
         android:onClick="onClickUploadStations"
         android:id="@+id/button3"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="272dp" />
+        android:layout_marginTop="372dp" />
 
 </RelativeLayout>

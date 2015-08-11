@@ -9,4 +9,27 @@
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+
+
+
+    <EditText android:id="@+id/settings_input_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"/>
+
+    <EditText android:id="@+id/settings_input_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_login_button"
+        android:layout_centerInParent="true"
+        android:onClick="onClickLogin" />
+
+
+
 </RelativeLayout>
