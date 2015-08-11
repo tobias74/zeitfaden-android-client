@@ -1,6 +1,7 @@
 package zeitfaden.com.zeitfaden;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
@@ -12,7 +13,7 @@ import android.util.Log;
 public class DatabaseManager extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "zeitfaden.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
     private static DatabaseManager sINSTANCE;
     private static Object sLOCK;
 
@@ -25,11 +26,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
         "end_latitude REAL, " +
         "start_longitude REAL, " +
         "end_longitude REAL, " +
-        "start_timestamp INTEGER" +
-        "end_timestamp INTEGER" +
+        "start_timestamp INTEGER, " +
+        "end_timestamp INTEGER, " +
         "media_file_path TEXT" +
         ");";
-
 
 
     public DatabaseManager(Context context) {
@@ -56,13 +56,27 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public void storeStation(Station myStation){
         Log.d("Tobias", "inserting new station in DatabaseMansger");
 
-        SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (description) VALUES (?)");
+        SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (description, start_latitude, start_longitude, end_latitude, end_longitude, start_timestamp, end_timestamp, publish_status) VALUES (?,?,?,?,?,?,?,?)");
 
         stationInsert.bindString(1, myStation.getDescription());
+        stationInsert.bindDouble(2, myStation.getStartLatitude());
+        stationInsert.bindDouble(3, myStation.getStartLongitude());
+        stationInsert.bindDouble(4, myStation.getEndLatitude());
+        stationInsert.bindDouble(5, myStation.getEndLongitude());
+        stationInsert.bindLong(6, myStation.getStartTimestamp());
+        stationInsert.bindLong(7, myStation.getEndTimestamp());
+        stationInsert.bindString(8, myStation.getPublishStatus());
+
 
         long id = stationInsert.executeInsert();
 
 
+    }
+
+
+    public Cursor getReadCursorOnStations(){
+        Cursor allStations = this.getReadableDatabase().rawQuery("SELECT * FROM stations",null);
+        return allStations;
     }
 
     public void onCreate(SQLiteDatabase db){
@@ -70,7 +84,9 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-
+        //Log.d("Tobias","now dropping the old table.");
+        //db.execSQL("DROP TABLE stations");
+        onCreate(db);
     }
 
 

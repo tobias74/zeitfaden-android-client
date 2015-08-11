@@ -89,7 +89,8 @@ public class GeoPositionService extends Service implements LocationListener,
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000); // Update location every second
+        mLocationRequest.setInterval(60000); // Update location every second
+        mLocationRequest.setFastestInterval(30000); // Update location every second
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);

@@ -44,6 +44,12 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     private static Handler myGeoCallbackHandler;
     private DatabaseManager myDatabaseManager;
 
+    private long previousTimestamp = 0;
+    private long currentTimestamp = 0;
+
+    private double previousLatitude = 0;
+    private double previousLongitude = 0;
+
     private ServiceConnection mGeoPositionServiceConnection = new ServiceConnection(){
         public void onServiceConnected(ComponentName className, IBinder binder) {
             ((GeoPositionService.GeoPositionServiceBinder) binder).addActivityCallbackHandler(myGeoCallbackHandler);
@@ -118,10 +124,36 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         final Bundle bundle = msg.getData();
         final Location location = (Location) bundle.get("location");
         Log.d("TOBIAS","Dies ist die Location " + location.toString());
+
+        if (previousLatitude == 0)
+        {
+            previousLatitude = location.getLatitude();
+            previousLongitude = location.getLongitude();
+        }
+
+        if (previousTimestamp == 0)
+        {
+            previousTimestamp = System.currentTimeMillis()/1000;
+        }
+
+        currentTimestamp = System.currentTimeMillis()/1000;
+
         Station myStation = new Station();
-        myStation.setDescription("Hello Dude.");
+        myStation.setDescription("#radtour #grandesalpes");
+        myStation.setStartLatitude(previousLatitude);
+        myStation.setStartLongitude(previousLongitude);
+        myStation.setEndLatitude(location.getLatitude());
+        myStation.setEndLongitude(location.getLongitude());
+        myStation.setPublishStatus("public");
+        myStation.setStartTimestamp(previousTimestamp);
+        myStation.setEndTimestamp(currentTimestamp);
+        Log.d("Tobias","stations start latitude " + myStation.getStartLatitude());
 
         myDatabaseManager.storeStation(myStation);
+
+        previousLatitude = location.getLatitude();
+        previousLongitude = location.getLongitude();
+        previousTimestamp = currentTimestamp;
 
 
         /*

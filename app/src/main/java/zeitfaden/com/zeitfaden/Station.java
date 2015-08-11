@@ -5,30 +5,30 @@ package zeitfaden.com.zeitfaden;
  */
 public class Station {
 
-    private int startTimestamp;
-    private int endTimestamp;
+    private long startTimestamp=0;
+    private long endTimestamp=0;
     private String description;
-    private float startLatitude;
-    private float endLatitude;
-    private float startLongitude;
-    private float endLongitude;
+    private double startLatitude;
+    private double endLatitude;
+    private double startLongitude;
+    private double endLongitude;
     private String publishStatus;
     private String mediaFilePath;
 
 
-    public int getStartTimestamp() {
+    public long getStartTimestamp() {
         return startTimestamp;
     }
 
-    public void setStartTimestamp(int startTimestamp) {
+    public void setStartTimestamp(long startTimestamp) {
         this.startTimestamp = startTimestamp;
     }
 
-    public int getEndTimestamp() {
+    public long getEndTimestamp() {
         return endTimestamp;
     }
 
-    public void setEndTimestamp(int endTimestamp) {
+    public void setEndTimestamp(long endTimestamp) {
         this.endTimestamp = endTimestamp;
     }
 
@@ -40,27 +40,27 @@ public class Station {
         this.description = description;
     }
 
-    public float getStartLatitude() {
+    public double getStartLatitude() {
         return startLatitude;
     }
 
-    public void setStartLatitude(float startLatitude) {
+    public void setStartLatitude(double startLatitude) {
         this.startLatitude = startLatitude;
     }
 
-    public float getEndLatitude() {
+    public double getEndLatitude() {
         return endLatitude;
     }
 
-    public void setEndLatitude(float endLatitude) {
+    public void setEndLatitude(double endLatitude) {
         this.endLatitude = endLatitude;
     }
 
-    public float getEndLongitude() {
+    public double getEndLongitude() {
         return endLongitude;
     }
 
-    public void setEndLongitude(float endLongitude) {
+    public void setEndLongitude(double endLongitude) {
         this.endLongitude = endLongitude;
     }
 
@@ -81,11 +81,11 @@ public class Station {
     }
 
 
-    public float getStartLongitude() {
+    public double getStartLongitude() {
         return startLongitude;
     }
 
-    public void setStartLongitude(float startLongitude) {
+    public void setStartLongitude(double startLongitude) {
         this.startLongitude = startLongitude;
     }
 

@@ -56,6 +56,11 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+
+        <service
+            android:name=".ZeitfadenServerService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

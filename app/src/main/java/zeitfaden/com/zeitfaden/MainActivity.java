@@ -3,9 +3,22 @@ package zeitfaden.com.zeitfaden;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -46,6 +59,10 @@ public class MainActivity extends ActionBarActivity {
     public void onClickShowTest(View Button){
         final Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
+    }
+
+    public void onClickUploadStations(View Button){
+        ZeitfadenServerService.startActionUpload(this);
     }
 
 }
