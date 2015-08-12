@@ -5,14 +5,21 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,6 +45,12 @@ public class ZeitfadenServerService extends IntentService {
     private static final String EXTRA_PARAM1 = "zeitfaden.com.zeitfaden.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "zeitfaden.com.zeitfaden.extra.PARAM2";
 
+    private static final String ZEITFADEN_BASE_URL = "http://api.zeitfaden.com";
+    private static final String ZEITFADEN_SHARD_BY_EMAIL = "/info/getShardByEmail";
+    private static final String ZEITFADEN_USER_LOGIN = "/user/login";
+    private static final String ZEITFADEN_INSERT_STATION = "/station/insert";
+
+    private DefaultHttpClient httpClient;
 
 
 
@@ -85,7 +98,7 @@ public class ZeitfadenServerService extends IntentService {
         Intent intent = new Intent(context, ZeitfadenServerService.class);
         intent.setAction(ACTION_LOGIN_AND_UPLOAD);
         intent.putExtra("email", email);
-        intent.putExtra("password",password);
+        intent.putExtra("password", password);
         context.startService(intent);
 
     }
@@ -93,6 +106,8 @@ public class ZeitfadenServerService extends IntentService {
 
     public ZeitfadenServerService() {
         super("ZeitfadenServerService");
+        httpClient = new DefaultHttpClient();
+
     }
 
     @Override
@@ -136,12 +151,90 @@ public class ZeitfadenServerService extends IntentService {
     private void handleActionLoginAndUpload(String email, String password){
         Log.d("Tobias", "trying to login and upload here.");
         Log.d("Tobias", "this is what we got" + email + " and " + password);
+        String url = ZEITFADEN_BASE_URL + ZEITFADEN_SHARD_BY_EMAIL + "/email/" + email;
+        Log.d("Tobias",url);
+        HttpGet shardByEmailRequest = new HttpGet(url);
+
+        try {
+            Log.d("Tobias", "trying5 to reqeustogin here.");
+            HttpResponse response = httpClient.execute(shardByEmailRequest);
+
+            String responseString = EntityUtils.toString(response.getEntity());
+            Log.d("Tobias", responseString);
+
+            JSONObject json = new JSONObject(responseString);
+
+
+            Log.d("Tobias", "tryi6 to request here.");
+
+            Log.d("Tobias","we gonna use this url: " + json.getString("shardUrl"));
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("userShardUrl", "http://" + json.getString("shardUrl"));
+            editor.putString("email", email);
+            editor.putString("password", password);
+            editor.commit();
+
+            loginUser();
+
+        }
+        catch (ClientProtocolException e1){
+
+        }
+        catch (IOException e1){
+
+        }
+        catch (JSONException el){
+            Log.d("Tobias","json expcetion");
+        }
+
+
+
+
+    }
+
+
+    private void loginUser(){
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        String userShardUrl = settings.getString("userShardUrl","not set");
+
+        Log.d("Tobias","this is the shard we are goona use " + userShardUrl);
+
+        HttpPost loginHttpPost = new HttpPost(userShardUrl + ZEITFADEN_USER_LOGIN);
+        List<NameValuePair> loginParameters = new ArrayList<NameValuePair>();
+        loginParameters.add(new BasicNameValuePair("email", settings.getString("email","")));
+        loginParameters.add(new BasicNameValuePair("password", settings.getString("password","")));
+        try{
+            loginHttpPost.setEntity(new UrlEncodedFormEntity(loginParameters));
+        }
+        catch (UnsupportedEncodingException e2){
+
+        }
+
+        try {
+            Log.d("Tobias", "trying5 to login here.");
+            HttpResponse response = httpClient.execute(loginHttpPost);
+            String responseString = EntityUtils.toString(response.getEntity());
+            Log.d("Tobias", responseString);
+            Log.d("Tobias", "trying6 to login here.");
+
+
+        }
+        catch (ClientProtocolException e1){
+
+        }
+        catch (IOException e1){
+
+        }
 
     }
 
 
     private void handleActionUpload(){
-
+        /*
         Log.d("Tobias", "trying to upload here.");
         String myInsertUrl = "http://test-api.zeitfaden.com:80/station/insert/";
         String myLoginUrl = "http://test-api.zeitfaden.com:80/user/login/";
@@ -149,7 +242,7 @@ public class ZeitfadenServerService extends IntentService {
         DefaultHttpClient client = new DefaultHttpClient();
         Log.d("Tobias", "trying2 to upload here.");
 
-        
+
         HttpPost loginHttpPost = new HttpPost(myLoginUrl);
         List<NameValuePair> loginParameters = new ArrayList<NameValuePair>();
         loginParameters.add(new BasicNameValuePair("email", "***********"));
@@ -173,23 +266,18 @@ public class ZeitfadenServerService extends IntentService {
 
         }
 
+        */
 
+        loginUser();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        String userShardUrl = settings.getString("userShardUrl","");
+        Log.d("Tobias","this is the shard we are goona use to upload " + userShardUrl);
 
         DatabaseManager myDatabaseManager = DatabaseManager.getInstance(this);
 
         Cursor stationCursor = myDatabaseManager.getReadCursorOnStations();
 
-
-/*
-        "description TEXT, " +
-        "publish_status TEXT, " +
-        "start_latitude REAL, " +
-        "end_latitude REAL, " +
-        "start_longitude REAL, " +
-        "end_longitude REAL, " +
-        "start_timestamp INTEGER, " +
-        "end_timestamp INTEGER, " +
- */
         while (stationCursor.moveToNext()){
             Log.d("Tobias", stationCursor.getString(0));
             Log.d("Tobias", stationCursor.getString(1));
@@ -205,7 +293,7 @@ public class ZeitfadenServerService extends IntentService {
             Long endTimestamp = stationCursor.getLong(8);
 
 
-            HttpPost httpPost = new HttpPost(myInsertUrl);
+            HttpPost httpPost = new HttpPost(userShardUrl + ZEITFADEN_INSERT_STATION);
 
             Log.d("Tobias", "trying3 to upload here with start latitude " + startLatitude);
 
@@ -231,7 +319,7 @@ public class ZeitfadenServerService extends IntentService {
 
             try {
                 Log.d("Tobias", "trying5 to upload here.");
-                client.execute(httpPost);
+                httpClient.execute(httpPost);
                 Log.d("Tobias", "trying6 to upload here.");
             }
             catch (ClientProtocolException e1){

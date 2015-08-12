@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.PowerManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -50,6 +51,9 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     private double previousLatitude = 0;
     private double previousLongitude = 0;
 
+    private PowerManager.WakeLock wakeLock;
+
+
     private ServiceConnection mGeoPositionServiceConnection = new ServiceConnection(){
         public void onServiceConnected(ComponentName className, IBinder binder) {
             ((GeoPositionService.GeoPositionServiceBinder) binder).addActivityCallbackHandler(myGeoCallbackHandler);
@@ -79,6 +83,9 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         myGeoCallbackHandler = new ShowMapCallbackHandler(this);
 
 
+        PowerManager mgr = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        wakeLock.acquire();
 
 
         final Intent geoIntent = new Intent(this, GeoPositionService.class);
@@ -92,6 +99,8 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
     @Override
     protected void onDestroy() {
+        wakeLock.release();
+
         myGeoCallbackHandler.removeCallbacksAndMessages(null);
         unbindService(mGeoPositionServiceConnection);
         stopService(new Intent(this, GeoPositionService.class));
