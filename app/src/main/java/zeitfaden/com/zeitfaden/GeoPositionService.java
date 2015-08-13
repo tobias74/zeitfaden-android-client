@@ -33,7 +33,7 @@ public class GeoPositionService extends Service implements LocationListener,
     private LocationRequest mLocationRequest;
 
     private static final long UPDATE_INTERVAL = 20000;
-    private static final long FASTEST_INTERVAL = 5000;
+    private static final long FASTEST_INTERVAL = 10000;
 
     public GeoPositionService() {
     }

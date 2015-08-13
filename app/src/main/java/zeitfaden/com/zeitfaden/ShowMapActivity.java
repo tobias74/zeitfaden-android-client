@@ -155,6 +155,25 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
 
     public void handleMusicMessage(Message msg){
+        final Bundle bundle = msg.getData();
+        final Location location = (Location) bundle.get("location");
+        Log.d("TOBIAS","Dies ist die Location fuer die Musik " + location.toString());
+
+
+        currentTimestamp = System.currentTimeMillis()/1000;
+
+        Station myStation = new Station();
+        myStation.setDescription("#music " + bundle.getString("track"));
+        myStation.setStartLatitude(location.getLatitude());
+        myStation.setStartLongitude(location.getLongitude());
+        myStation.setEndLatitude(location.getLatitude());
+        myStation.setEndLongitude(location.getLongitude());
+        myStation.setPublishStatus("public");
+        myStation.setStartTimestamp(currentTimestamp);
+        myStation.setEndTimestamp(currentTimestamp);
+        Log.d("Tobias","music-stations start latitude " + myStation.getStartLatitude());
+
+        myDatabaseManager.storeStation(myStation);
 
     }
 
