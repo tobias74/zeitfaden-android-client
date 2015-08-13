@@ -43,6 +43,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCallback {
 
     private static Handler myGeoCallbackHandler;
+    private static Handler myMusicCallbackHandler;
+
     private DatabaseManager myDatabaseManager;
 
     private long previousTimestamp = 0;
@@ -61,6 +63,17 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
         public void onServiceDisconnected(ComponentName className){}
     };
+
+    private ServiceConnection mMusicTrackingServiceConnection = new ServiceConnection(){
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            ((MusicTrackingService.MusicTrackingServiceBinder) binder).addActivityCallbackHandler(myMusicCallbackHandler);
+        }
+
+        public void onServiceDisconnected(ComponentName className){}
+    };
+
+
+
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -82,6 +95,8 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
         myGeoCallbackHandler = new ShowMapCallbackHandler(this);
 
+        myMusicCallbackHandler = new MusicTrackingCallbackHandler(this);
+
 
         PowerManager mgr = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
         wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
@@ -90,6 +105,10 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
         final Intent geoIntent = new Intent(this, GeoPositionService.class);
         bindService(geoIntent, mGeoPositionServiceConnection, Context.BIND_AUTO_CREATE);
+
+        final Intent musicIntent = new Intent(this, MusicTrackingService.class);
+        bindService(musicIntent, mMusicTrackingServiceConnection, Context.BIND_AUTO_CREATE);
+
 
 
         Log.d("Tobias", "short before the get instance method inside show map acitivty.");
@@ -104,6 +123,11 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         myGeoCallbackHandler.removeCallbacksAndMessages(null);
         unbindService(mGeoPositionServiceConnection);
         stopService(new Intent(this, GeoPositionService.class));
+
+        myMusicCallbackHandler.removeCallbacksAndMessages(null);
+        unbindService(mMusicTrackingServiceConnection);
+        stopService(new Intent(this, MusicTrackingService.class));
+
         super.onDestroy();
     }
 
@@ -127,6 +151,11 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void handleMusicMessage(Message msg){
+
     }
 
     public void handleMessage(Message msg) {
@@ -196,5 +225,24 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
             }
         }
     }
+
+
+
+    static class MusicTrackingCallbackHandler extends Handler {
+        private WeakReference<ShowMapActivity> mActivity;
+
+        MusicTrackingCallbackHandler(ShowMapActivity activity) {
+            mActivity = new WeakReference<ShowMapActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            ShowMapActivity activity = mActivity.get();
+            if (activity != null) {
+                activity.handleMusicMessage(msg);
+            }
+        }
+    }
+
 
 }

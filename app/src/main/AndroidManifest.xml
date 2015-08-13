@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -62,6 +61,11 @@
         <service
             android:name=".ZeitfadenServerService"
             android:exported="false" >
+        </service>
+        <service
+            android:name=".MusicTrackingService"
+            android:enabled="true"
+            android:exported="true" >
         </service>
     </application>
 
