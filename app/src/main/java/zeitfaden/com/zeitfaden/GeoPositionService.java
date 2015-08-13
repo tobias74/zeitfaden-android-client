@@ -32,8 +32,8 @@ public class GeoPositionService extends Service implements LocationListener,
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
-    private static final long UPDATE_INTERVAL = 5000; // 5 Sekunden
-    private static final long SCHNELLSTES_INTERVAL = 1000; // 1 Sekunde
+    private static final long UPDATE_INTERVAL = 20000;
+    private static final long FASTEST_INTERVAL = 5000;
 
     public GeoPositionService() {
     }
@@ -63,6 +63,12 @@ public class GeoPositionService extends Service implements LocationListener,
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+
+    @Override
     public void onCreate() {
         super.onCreate();
         Log.d("Tobias", "location service created.");
@@ -89,8 +95,8 @@ public class GeoPositionService extends Service implements LocationListener,
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(60000); // Update location every second
-        mLocationRequest.setFastestInterval(30000); // Update location every second
+        mLocationRequest.setInterval(UPDATE_INTERVAL); // Update location every second
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL); // Update location every second
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
