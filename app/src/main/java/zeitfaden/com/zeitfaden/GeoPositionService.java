@@ -27,6 +27,15 @@ public class GeoPositionService extends Service implements LocationListener,
     private Location myLocation;
     private Handler activityCallbackHandler;
 
+    private DatabaseManager myDatabaseManager;
+
+    private long previousTimestamp = 0;
+    private long currentTimestamp = 0;
+
+    private double previousLatitude = 0;
+    private double previousLongitude = 0;
+
+
     public final IBinder mGpsBinder = new GeoPositionServiceBinder();
 
     private GoogleApiClient mGoogleApiClient;
@@ -35,7 +44,43 @@ public class GeoPositionService extends Service implements LocationListener,
     private static final long UPDATE_INTERVAL = 20000;
     private static final long FASTEST_INTERVAL = 10000;
 
+
+
     public GeoPositionService() {
+    }
+
+
+    private void recordNewLocation(Location location){
+        if (previousLatitude == 0)
+        {
+            previousLatitude = location.getLatitude();
+            previousLongitude = location.getLongitude();
+        }
+
+        if (previousTimestamp == 0)
+        {
+            previousTimestamp = System.currentTimeMillis()/1000;
+        }
+
+        currentTimestamp = System.currentTimeMillis()/1000;
+
+        Station myStation = new Station();
+        myStation.setDescription("#newapp");
+        myStation.setStartLatitude(previousLatitude);
+        myStation.setStartLongitude(previousLongitude);
+        myStation.setEndLatitude(location.getLatitude());
+        myStation.setEndLongitude(location.getLongitude());
+        myStation.setPublishStatus("public");
+        myStation.setStartTimestamp(previousTimestamp);
+        myStation.setEndTimestamp(currentTimestamp);
+        Log.d("Tobias","stations start latitude " + myStation.getStartLatitude());
+
+        myDatabaseManager.storeStation(myStation);
+
+        previousLatitude = location.getLatitude();
+        previousLongitude = location.getLongitude();
+        previousTimestamp = currentTimestamp;
+
     }
 
     @Override
@@ -43,6 +88,9 @@ public class GeoPositionService extends Service implements LocationListener,
         Log.d("Tobias","location changed oLocationChanged handelr got called.");
         if (location != null) {
             myLocation = location;
+
+            recordNewLocation(location);
+
 
             if (activityCallbackHandler != null){
                 final Bundle bundle = new Bundle();
@@ -72,6 +120,10 @@ public class GeoPositionService extends Service implements LocationListener,
     public void onCreate() {
         super.onCreate();
         Log.d("Tobias", "location service created.");
+
+        Log.d("Tobias", "short before the get instance method inside show map acitivty.");
+        myDatabaseManager = DatabaseManager.getInstance(this);
+
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)

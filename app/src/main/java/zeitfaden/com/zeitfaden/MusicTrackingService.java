@@ -25,6 +25,10 @@ public class MusicTrackingService extends Service implements
 
     public final IBinder mMusicBinder = new MusicTrackingServiceBinder();
 
+    private long currentTimestamp = 0;
+
+    private DatabaseManager myDatabaseManager;
+
     private GoogleApiClient mGoogleApiClient;
 
 
@@ -43,6 +47,27 @@ public class MusicTrackingService extends Service implements
     }
 
 
+    private void recordNewSong(Bundle bundle){
+        final Location location = (Location) bundle.get("location");
+        Log.d("TOBIAS", "Dies ist die Location fuer die Musik " + location.toString());
+
+        currentTimestamp = System.currentTimeMillis()/1000;
+
+        Station myStation = new Station();
+        myStation.setDescription("#listeningTo {title: " + bundle.getString("track") + "} by {artist: " + bundle.getString("artist") + "} from {album: " + bundle.getString("album") + "}");
+        myStation.setStartLatitude(location.getLatitude());
+        myStation.setStartLongitude(location.getLongitude());
+        myStation.setEndLatitude(location.getLatitude());
+        myStation.setEndLongitude(location.getLongitude());
+        myStation.setPublishStatus("public");
+        myStation.setStartTimestamp(currentTimestamp);
+        myStation.setEndTimestamp(currentTimestamp);
+        Log.d("Tobias","#listeningTo {title: " + bundle.getString("track") + "} by {artist: " + bundle.getString("artist") + "} from {album: " + bundle.getString("album") + "}" + "music-stations start latitude " + myStation.getStartLatitude());
+
+        myDatabaseManager.storeStation(myStation);
+
+    }
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -50,19 +75,19 @@ public class MusicTrackingService extends Service implements
             String track = intent.getStringExtra("track");
             Log.d("Tobias", "this track is playing!!! : " + track);
 
+            final Bundle bundle = new Bundle();
+            bundle.putParcelable("location", LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient));
+            bundle.putString("track", intent.getStringExtra("track"));
+            bundle.putString("artist", intent.getStringExtra("artist"));
+            bundle.putString("album", intent.getStringExtra("album"));
+
+            recordNewSong(bundle);
 
 
             if (activityCallbackHandler != null){
-                final Bundle bundle = new Bundle();
-                bundle.putParcelable("location", LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient));
-                bundle.putString("track",track);
-
-
                 final Message msg =  new Message();
                 msg.setData(bundle);
-
                 activityCallbackHandler.sendMessage(msg);
-
             }
 
         }
@@ -90,6 +115,9 @@ public class MusicTrackingService extends Service implements
     @Override
     public void onCreate(){
         super.onCreate();
+
+
+        myDatabaseManager = DatabaseManager.getInstance(this);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)

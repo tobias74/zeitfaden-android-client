@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.MapFragment;
@@ -45,13 +46,11 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     private static Handler myGeoCallbackHandler;
     private static Handler myMusicCallbackHandler;
 
-    private DatabaseManager myDatabaseManager;
 
-    private long previousTimestamp = 0;
-    private long currentTimestamp = 0;
 
-    private double previousLatitude = 0;
-    private double previousLongitude = 0;
+    private boolean areServicesStarted = false;
+    private GoogleMap myMap;
+    private Marker myMarker;
 
     private PowerManager.WakeLock wakeLock;
 
@@ -78,9 +77,12 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap map) {
         Log.d("Tobias","onMapReady!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Creating Marker now.");
-        map.addMarker(new MarkerOptions()
+
+        myMarker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(0, 0))
                 .title("Marker"));
+
+        myMap = map;
     }
 
 
@@ -97,27 +99,21 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
 
         myMusicCallbackHandler = new MusicTrackingCallbackHandler(this);
 
-
-        PowerManager mgr = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
-        wakeLock.acquire();
+        bindService(new Intent(this, GeoPositionService.class), mGeoPositionServiceConnection, 0);
+        bindService(new Intent(this, MusicTrackingService.class), mMusicTrackingServiceConnection, 0);
 
 
-        final Intent geoIntent = new Intent(this, GeoPositionService.class);
-        bindService(geoIntent, mGeoPositionServiceConnection, Context.BIND_AUTO_CREATE);
-
-        final Intent musicIntent = new Intent(this, MusicTrackingService.class);
-        bindService(musicIntent, mMusicTrackingServiceConnection, Context.BIND_AUTO_CREATE);
-
-
-
-        Log.d("Tobias", "short before the get instance method inside show map acitivty.");
-        myDatabaseManager = DatabaseManager.getInstance(this);
 
     }
 
     @Override
     protected void onDestroy() {
+
+        unbindService(mGeoPositionServiceConnection);
+        unbindService(mMusicTrackingServiceConnection);
+
+        // no, we do not want to give up any of our services.
+        /*
         wakeLock.release();
 
         myGeoCallbackHandler.removeCallbacksAndMessages(null);
@@ -127,6 +123,8 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         myMusicCallbackHandler.removeCallbacksAndMessages(null);
         unbindService(mMusicTrackingServiceConnection);
         stopService(new Intent(this, MusicTrackingService.class));
+        */
+
 
         super.onDestroy();
     }
@@ -157,24 +155,7 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     public void handleMusicMessage(Message msg){
         final Bundle bundle = msg.getData();
         final Location location = (Location) bundle.get("location");
-        Log.d("TOBIAS","Dies ist die Location fuer die Musik " + location.toString());
-
-
-        currentTimestamp = System.currentTimeMillis()/1000;
-
-        Station myStation = new Station();
-        myStation.setDescription("#music " + bundle.getString("track"));
-        myStation.setStartLatitude(location.getLatitude());
-        myStation.setStartLongitude(location.getLongitude());
-        myStation.setEndLatitude(location.getLatitude());
-        myStation.setEndLongitude(location.getLongitude());
-        myStation.setPublishStatus("public");
-        myStation.setStartTimestamp(currentTimestamp);
-        myStation.setEndTimestamp(currentTimestamp);
-        Log.d("Tobias","music-stations start latitude " + myStation.getStartLatitude());
-
-        myDatabaseManager.storeStation(myStation);
-
+        Log.d("TOBIAS", "Dies ist die Location fuer die Musik " + location.toString());
     }
 
     public void handleMessage(Message msg) {
@@ -182,50 +163,12 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
         final Location location = (Location) bundle.get("location");
         Log.d("TOBIAS","Dies ist die Location " + location.toString());
 
-        if (previousLatitude == 0)
-        {
-            previousLatitude = location.getLatitude();
-            previousLongitude = location.getLongitude();
-        }
+        final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        if (previousTimestamp == 0)
-        {
-            previousTimestamp = System.currentTimeMillis()/1000;
-        }
-
-        currentTimestamp = System.currentTimeMillis()/1000;
-
-        Station myStation = new Station();
-        myStation.setDescription("#newapp");
-        myStation.setStartLatitude(previousLatitude);
-        myStation.setStartLongitude(previousLongitude);
-        myStation.setEndLatitude(location.getLatitude());
-        myStation.setEndLongitude(location.getLongitude());
-        myStation.setPublishStatus("public");
-        myStation.setStartTimestamp(previousTimestamp);
-        myStation.setEndTimestamp(currentTimestamp);
-        Log.d("Tobias","stations start latitude " + myStation.getStartLatitude());
-
-        myDatabaseManager.storeStation(myStation);
-
-        previousLatitude = location.getLatitude();
-        previousLongitude = location.getLongitude();
-        previousTimestamp = currentTimestamp;
+        myMarker.setPosition(latLng);
+        myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 
 
-        /*
-        final Bundle bundle = msg.getData();
-        if (bundle != null) {
-            final Location location = (Location) bundle
-                    .get("location");
-            final LatLng latLng = new LatLng(location.getLatitude(),
-                    location.getLongitude());
-
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-
-        }
-        */
     }
 
 
@@ -264,4 +207,32 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     }
 
 
+    public void onClickStartLocationRecording(View button){
+        Log.d("Tobias","got the click on start");
+
+        //PowerManager mgr = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        //wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        //wakeLock.acquire();
+
+        final Intent geoIntent = new Intent(this, GeoPositionService.class);
+        startService(geoIntent);
+
+        final Intent musicIntent = new Intent(this, MusicTrackingService.class);
+        startService(musicIntent);
+
+
+
+
+
+    }
+
+
+    public void onClickStopLocationRecording(View button){
+        Log.d("Tobias","got the click on stop");
+
+        stopService(new Intent(this, GeoPositionService.class));
+
+        stopService(new Intent(this,MusicTrackingService.class));
+
+    }
 }

@@ -300,6 +300,7 @@ public class ZeitfadenServerService extends IntentService {
             List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
 
+            postParameters.add(new BasicNameValuePair("description", String.valueOf(description)));
             postParameters.add(new BasicNameValuePair("startLatitude", String.valueOf(startLatitude)));
             postParameters.add(new BasicNameValuePair("startLongitude", String.valueOf(startLongitude)));
             postParameters.add(new BasicNameValuePair("endLatitude", String.valueOf(endLatitude)));
