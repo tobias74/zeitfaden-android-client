@@ -54,7 +54,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="do the thing"
         android:onClick="onClickExampleTwo"
         android:id="@+id/buttonExample2"
         android:layout_below="@+id/textView"

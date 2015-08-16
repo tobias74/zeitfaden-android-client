@@ -69,8 +69,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onClickExampleTwo(View Button){
-        final Intent intent = new Intent(this, Example2Activity.class);
-        startActivity(intent);
     }
 
     public void onClickUploadStations(View Button){

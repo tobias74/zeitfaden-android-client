@@ -12,10 +12,6 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -71,28 +67,7 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-        <service android:name=".authentication.ZeitfadenAuthenticatorService" >
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
 
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
-
-        <activity
-            android:name=".activities.AuthenticatorActivity"
-            android:label="@string/title_activity_authenticator" >
-        </activity>
-        <activity
-            android:name=".activities.SignUpActivity"
-            android:label="@string/title_activity_sign_up" >
-        </activity>
-        <activity
-            android:name=".activities.Example2Activity"
-            android:label="@string/title_activity_example2" >
-        </activity>
     </application>
 
 </manifest>
