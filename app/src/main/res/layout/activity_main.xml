@@ -50,4 +50,15 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="372dp" />
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:onClick="onClickExampleTwo"
+        android:id="@+id/buttonExample2"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="422dp" />
+
 </RelativeLayout>

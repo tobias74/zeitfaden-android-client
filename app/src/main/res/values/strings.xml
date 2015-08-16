@@ -10,4 +10,12 @@
     <string name="settings_login_button">Login</string>
     <string name="start_location_recording">Start Recording</string>
     <string name="stop_location_recording">Stop Recording</string>
+
+    <string name="label">Zeitfaden</string>
+
+    <string name="signup_title">Create new account</string>
+    <string name="login_label">Log in</string>
+    <string name="title_activity_authenticator">Authenticator</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_example2">Example2Activity</string>
 </resources>

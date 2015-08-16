@@ -1,4 +1,4 @@
-package zeitfaden.com.zeitfaden;
+package zeitfaden.com.zeitfaden.services;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,6 +19,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+
+import zeitfaden.com.zeitfaden.DatabaseManager;
+import zeitfaden.com.zeitfaden.Station;
 
 public class GeoPositionService extends Service implements LocationListener,
         GoogleApiClient.ConnectionCallbacks,

@@ -12,6 +12,10 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -30,7 +34,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,33 +44,55 @@
         </activity>
 
         <service
-            android:name=".GeoPositionService"
+            android:name=".services.GeoPositionService"
             android:enabled="true"
             android:exported="true" >
         </service>
 
         <activity
-            android:name=".ShowMapActivity"
+            android:name=".activities.ShowMapActivity"
             android:label="@string/title_activity_show_map" >
         </activity>
         <activity
-            android:name=".TestActivity"
+            android:name=".activities.TestActivity"
             android:label="@string/title_activity_test" >
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
 
         <service
-            android:name=".ZeitfadenServerService"
+            android:name=".services.ZeitfadenServerService"
             android:exported="false" >
         </service>
         <service
-            android:name=".MusicTrackingService"
+            android:name=".services.MusicTrackingService"
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service android:name=".authentication.ZeitfadenAuthenticatorService" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <activity
+            android:name=".activities.AuthenticatorActivity"
+            android:label="@string/title_activity_authenticator" >
+        </activity>
+        <activity
+            android:name=".activities.SignUpActivity"
+            android:label="@string/title_activity_sign_up" >
+        </activity>
+        <activity
+            android:name=".activities.Example2Activity"
+            android:label="@string/title_activity_example2" >
+        </activity>
     </application>
 
 </manifest>

@@ -1,12 +1,14 @@
-package zeitfaden.com.zeitfaden;
+package zeitfaden.com.zeitfaden.activities;
 
-import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import zeitfaden.com.zeitfaden.R;
+import zeitfaden.com.zeitfaden.services.ZeitfadenServerService;
 
 
 public class SettingsActivity extends ActionBarActivity {

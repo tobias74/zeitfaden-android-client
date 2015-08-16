@@ -1,28 +1,14 @@
-package zeitfaden.com.zeitfaden;
+package zeitfaden.com.zeitfaden.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import zeitfaden.com.zeitfaden.R;
+import zeitfaden.com.zeitfaden.services.ZeitfadenServerService;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -53,8 +39,16 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            final Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
+        if (id == R.id.action_settings) {
+            final Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -71,6 +65,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void onClickSettings(View Button){
         final Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickExampleTwo(View Button){
+        final Intent intent = new Intent(this, Example2Activity.class);
         startActivity(intent);
     }
 

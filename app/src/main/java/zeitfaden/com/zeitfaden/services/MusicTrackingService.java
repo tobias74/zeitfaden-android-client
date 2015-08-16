@@ -1,4 +1,4 @@
-package zeitfaden.com.zeitfaden;
+package zeitfaden.com.zeitfaden.services;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -17,6 +17,9 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+
+import zeitfaden.com.zeitfaden.DatabaseManager;
+import zeitfaden.com.zeitfaden.Station;
 
 public class MusicTrackingService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
