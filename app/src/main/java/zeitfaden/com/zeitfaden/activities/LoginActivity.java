@@ -10,19 +10,18 @@ import android.widget.EditText;
 import zeitfaden.com.zeitfaden.R;
 import zeitfaden.com.zeitfaden.services.ZeitfadenServerService;
 
-
-public class SettingsActivity extends ActionBarActivity {
+public class LoginActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_login);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_settings, menu);
+        getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
     }
 
@@ -41,5 +40,18 @@ public class SettingsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void onClickLogin(View button) {
+
+        final EditText editTextEmail = (EditText) findViewById(R.id.settings_input_email);
+        final String email = editTextEmail.getText().toString();
+
+        final EditText editTextPassword = (EditText) findViewById(R.id.settings_input_password);
+        final String password = editTextPassword.getText().toString();
+
+
+        ZeitfadenServerService.startActionLogin(this, email, password);
+
+    }
 
 }

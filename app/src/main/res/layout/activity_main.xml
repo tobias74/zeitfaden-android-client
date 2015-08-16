@@ -54,9 +54,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="do the thing"
-        android:onClick="onClickExampleTwo"
-        android:id="@+id/buttonExample2"
+        android:text="Login"
+        android:onClick="onClickLogin"
+        android:id="@+id/buttonLogin"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:layout_marginTop="422dp" />

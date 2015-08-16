@@ -1,44 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#000000"
-    android:paddingLeft="17dp"
-    android:paddingRight="17dp"
-    >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="zeitfaden.com.zeitfaden.activities.LoginActivity">
 
-    <EditText android:id="@+id/accountName"
+    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+
+
+    <EditText android:id="@+id/settings_input_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="Email address"
         android:inputType="textEmailAddress"
-        android:padding="10dp"
-        />
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="67dp" />
 
-    <EditText android:id="@+id/accountPassword"
+    <EditText android:id="@+id/settings_input_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:inputType="textPassword"
-        android:hint="Password"
-        android:padding="10dp"
-        />
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
 
-    <Button android:id="@+id/submit"
-        android:layout_width="match_parent"
+
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Sign in"
-        android:padding="10dp"/>
+        android:text="@string/settings_login_button"
+        android:onClick="onClickLogin"
+        android:id="@+id/button4"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="61dp" />
 
-    <TextView android:id="@+id/signUp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="New user?"
-        android:padding="10dp"/>
 
-</LinearLayout>
 
+</RelativeLayout>

@@ -68,6 +68,10 @@
             android:exported="true" >
         </service>
 
+        <activity
+            android:name=".activities.LoginActivity"
+            android:label="@string/title_activity_login" >
+        </activity>
     </application>
 
 </manifest>
