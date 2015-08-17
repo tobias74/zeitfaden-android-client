@@ -38,17 +38,6 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            final Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        if (id == R.id.action_settings) {
-            final Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -63,9 +52,9 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+
     public void onClickSettings(View Button){
-        final Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+
     }
 
     public void onClickLogin(View Button){

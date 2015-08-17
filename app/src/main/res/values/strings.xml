@@ -6,7 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_show_map">ShowMap</string>
     <string name="title_activity_test">TestActivity</string>
-    <string name="title_activity_settings">SettingsActivity</string>
     <string name="settings_login_button">Login</string>
     <string name="start_location_recording">Start Recording</string>
     <string name="stop_location_recording">Stop Recording</string>
