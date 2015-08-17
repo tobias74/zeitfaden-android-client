@@ -11,6 +11,10 @@
         android:id="@+id/textView2" />
 
 
+    <Spinner android:id="@+id/recording_interval_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
 
 
 

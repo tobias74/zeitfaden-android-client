@@ -2,21 +2,48 @@ package zeitfaden.com.zeitfaden.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
+
+import org.apache.http.message.BasicNameValuePair;
 
 import zeitfaden.com.zeitfaden.R;
+import zeitfaden.com.zeitfaden.SpinnerIntegerItem;
 import zeitfaden.com.zeitfaden.services.ZeitfadenServerService;
 
 
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
+
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        spinner = (Spinner)findViewById(R.id.recording_interval_spinner);
+        spinner.setOnItemSelectedListener(this);
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, new SpinnerIntegerItem[] {
+            new SpinnerIntegerItem(30,"30 seconds"),
+            new SpinnerIntegerItem(60,"60 seconds"),
+            new SpinnerIntegerItem(120,"120 seconds")
+
+        });
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+
     }
 
     @Override
@@ -40,6 +67,18 @@ public class SettingsActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void onItemSelected(AdapterView<?> parent, View v, int position, long id){
+        SpinnerIntegerItem item = (SpinnerIntegerItem)spinner.getSelectedItem();
+        Log.d("Tobias", "we have " + item.getValue());
+
+    }
+
+    public void onNothingSelected(AdapterView<?> parent){
+
+    }
+
 
 
 }
