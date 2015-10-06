@@ -3,15 +3,21 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="zeitfaden.com.zeitfaden.activities.SettingsActivity$GeneralPreferenceFragment"
-        android:title="@string/pref_header_general" />
+        android:fragment="zeitfaden.com.zeitfaden.StockPreferenceFragment"
+        android:title="@string/pref_header_general" >
+        <extra android:name="resource" android:value="pref_general"/>
+    </header>
 
     <header
-        android:fragment="zeitfaden.com.zeitfaden.activities.SettingsActivity$NotificationPreferenceFragment"
-        android:title="@string/pref_header_notifications" />
+        android:fragment="zeitfaden.com.zeitfaden.StockPreferenceFragment"
+        android:title="@string/pref_header_notifications" >
+        <extra android:name="resource" android:value="pref_notification"/>
+    </header>
 
     <header
-        android:fragment="zeitfaden.com.zeitfaden.activities.SettingsActivity$DataSyncPreferenceFragment"
-        android:title="@string/pref_header_data_sync" />
+        android:fragment="zeitfaden.com.zeitfaden.StockPreferenceFragment"
+        android:title="@string/pref_header_data_sync" >
+        <extra android:name="resource" android:value="pref_data_sync"/>
+    </header>
 
 </preference-headers>

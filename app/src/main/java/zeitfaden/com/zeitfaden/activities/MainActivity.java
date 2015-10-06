@@ -54,6 +54,8 @@ public class MainActivity extends ActionBarActivity {
 
 
     public void onClickSettings(View Button){
+        final Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
 
     }
 

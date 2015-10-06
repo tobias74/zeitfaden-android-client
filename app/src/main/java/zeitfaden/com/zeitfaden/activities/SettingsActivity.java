@@ -18,6 +18,7 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 
 import zeitfaden.com.zeitfaden.R;
+import zeitfaden.com.zeitfaden.StockPreferenceFragment;
 
 import java.util.List;
 
@@ -34,6 +35,13 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity {
+
+
+
+
+    protected boolean isValidFragment(String fragmentName) {
+        return StockPreferenceFragment.class.getName().equals(fragmentName);
+    }
 
 
     /**
