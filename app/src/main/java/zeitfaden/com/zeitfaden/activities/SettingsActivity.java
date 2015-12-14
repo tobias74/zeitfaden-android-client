@@ -50,7 +50,7 @@ public class SettingsActivity extends ActionBarActivity {
         final String password = editTextPassword.getText().toString();
 
 
-        ZeitfadenServerService.startActionLoginAndUpload(this, email, password);
+        //ZeitfadenServerService.startActionLoginAndUpload(this, email, password);
 
     }
 

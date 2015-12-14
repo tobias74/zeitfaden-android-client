@@ -10,8 +10,10 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import com.google.android.gms.common.ConnectionResult;
