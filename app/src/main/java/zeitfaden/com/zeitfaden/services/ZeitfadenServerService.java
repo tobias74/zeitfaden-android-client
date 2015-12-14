@@ -256,6 +256,7 @@ public class ZeitfadenServerService extends IntentService {
                 }
             }
             catch (ClientProtocolException e1){
+                Log.d("Tobias","we had a protocal expcetion? are we logged out?");
 
             }
             catch (IOException e1){
