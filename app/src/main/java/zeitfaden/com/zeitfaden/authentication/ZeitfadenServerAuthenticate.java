@@ -5,18 +5,24 @@ import android.util.Log;
 import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -63,51 +69,32 @@ public class ZeitfadenServerAuthenticate implements ServerAuthenticate{
     }
 
     @Override
-    public String userSignIn(String user, String pass, String authType) throws Exception {
+    public String userSignIn(String email, String password, String authType) throws Exception {
 
         Log.d("udini", "userSignIn");
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        String url = "https://api.parse.com/1/login";
+        DefaultHttpClient client = new DefaultHttpClient();
+        String url = "http://api.zeitfaden.com/OAuth2/token";
 
 
-        String query = null;
-        try {
-            query = String.format("%s=%s&%s=%s", "username", URLEncoder.encode(user, "UTF-8"), "password", pass);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        url += "?" + query;
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
+        nameValuePairs.add(new BasicNameValuePair("username",email));
+        nameValuePairs.add(new BasicNameValuePair("password",password));
+        nameValuePairs.add(new BasicNameValuePair("grant_type","password"));
+        nameValuePairs.add(new BasicNameValuePair("client_id","5612d33d6987c887945"));
+        HttpPost loginRequest = new HttpPost(url);
 
-        HttpGet httpGet = new HttpGet(url);
+        loginRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        HttpResponse loginResponse = client.execute(loginRequest);
 
-        httpGet.addHeader("X-Parse-Application-Id", "XUafJTkPikD5XN5HxciweVuSe12gDgk2tzMltOhr");
-        httpGet.addHeader("X-Parse-REST-API-Key", "8L9yTQ3M86O4iiucwWb4JS7HkxoSKo7ssJqGChWx");
+        String loginResponseString = EntityUtils.toString(loginResponse.getEntity());
+        Log.d("Tobias", loginResponseString);
+        JSONObject json = new JSONObject(loginResponseString);
 
-        HttpParams params = new BasicHttpParams();
-        params.setParameter("username", user);
-        params.setParameter("password", pass);
-        httpGet.setParams(params);
-//        httpGet.getParams().setParameter("username", user).setParameter("password", pass);
+        //editor.putString("access_token", json.getString("access_token"));
+        //editor.putString("refresh_token", json.getString("refresh_token"));
 
-        String authtoken = null;
-        try {
-            HttpResponse response = httpClient.execute(httpGet);
-
-            String responseString = EntityUtils.toString(response.getEntity());
-            if (response.getStatusLine().getStatusCode() != 200) {
-                ParseComError error = new Gson().fromJson(responseString, ParseComError.class);
-                throw new Exception("Error signing-in ["+error.code+"] - " + error.error);
-            }
-
-            User loggedUser = new Gson().fromJson(responseString, User.class);
-            authtoken = loggedUser.sessionToken;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return authtoken;
+        return json.getString("access_token");
     }
 
 

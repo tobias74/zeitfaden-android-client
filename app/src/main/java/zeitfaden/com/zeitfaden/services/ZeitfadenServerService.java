@@ -1,10 +1,17 @@
 package zeitfaden.com.zeitfaden.services;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -27,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zeitfaden.com.zeitfaden.DatabaseManager;
+import zeitfaden.com.zeitfaden.authentication.AccountGeneral;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -55,6 +63,7 @@ public class ZeitfadenServerService extends IntentService {
 
     private DefaultHttpClient httpClient;
 
+    private AccountManager mAccountManager;
 
 
 
@@ -193,15 +202,29 @@ public class ZeitfadenServerService extends IntentService {
     private void handleActionUpload(){
 
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        String access_token = settings.getString("access_token","");
+        String access_token = ""; // = settings.getString("access_token", "");
+
+        mAccountManager = AccountManager.get(getBaseContext());
+        Account myAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        try {
+            access_token = mAccountManager.blockingGetAuthToken(myAccounts[0], AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
+        } catch (OperationCanceledException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AuthenticatorException e) {
+            e.printStackTrace();
+        }
 
         Log.d("Tobias","this is the access_token we are goona use to upload " + access_token);
 
         DatabaseManager myDatabaseManager = DatabaseManager.getInstance(this);
 
         Cursor stationCursor = myDatabaseManager.getReadCursorOnStations();
+
 
         while (stationCursor.moveToNext()){
             Log.d("Tobias", stationCursor.getString(0));
@@ -268,4 +291,6 @@ public class ZeitfadenServerService extends IntentService {
 
 
     }
+
+
 }
