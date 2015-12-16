@@ -208,9 +208,10 @@ public class ZeitfadenServerService extends IntentService {
 
         mAccountManager = AccountManager.get(getBaseContext());
         Account myAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+        Account currentAccount = myAccounts[0];
 
         try {
-            access_token = mAccountManager.blockingGetAuthToken(myAccounts[0], AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
+            access_token = mAccountManager.blockingGetAuthToken(currentAccount, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
         } catch (OperationCanceledException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -277,12 +278,22 @@ public class ZeitfadenServerService extends IntentService {
                 if (uploadResponse.getStatusLine().getStatusCode() == 200){
                     myDatabaseManager.getWritableDatabase().delete("stations","_id=?",new String[]{myId});
                 }
+                else {
+                    Log.d("Tobias", "WE had an upload error, trying to incvaldiate and renew the token:");
+                    mAccountManager.invalidateAuthToken(currentAccount.type, access_token);
+                    access_token = mAccountManager.blockingGetAuthToken(currentAccount, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
+                    Log.d("Tobias","this is our new token: " + access_token);
+                }
             }
             catch (ClientProtocolException e1){
 
             }
             catch (IOException e1){
-
+                Log.d("Tobias","caught some excepotnk");
+            } catch (AuthenticatorException e) {
+                e.printStackTrace();
+            } catch (OperationCanceledException e) {
+                e.printStackTrace();
             }
 
         }
