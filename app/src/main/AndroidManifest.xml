@@ -93,6 +93,12 @@
             android:name=".activities.Example2Activity"
             android:label="@string/title_activity_example2" >
         </activity>
+
+        <service
+            android:name="com.zeitfaden.services.web.ZeitfadenWebService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

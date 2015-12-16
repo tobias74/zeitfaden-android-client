@@ -1,8 +1,14 @@
 package zeitfaden.com.zeitfaden.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,16 +16,42 @@ import android.view.View;
 import zeitfaden.com.zeitfaden.R;
 import zeitfaden.com.zeitfaden.services.ZeitfadenServerService;
 
+import com.zeitfaden.services.web.WebRequestRunnable;
+import com.zeitfaden.services.web.ZeitfadenWebService;
+import com.zeitfaden.services.web.ZeitfadenWebServiceBinder;
+
 
 public class MainActivity extends ActionBarActivity {
 
+    ZeitfadenWebServiceBinder webServiceBinder;
 
+    private ServiceConnection webServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            webServiceBinder = (ZeitfadenWebServiceBinder) service;
+            Log.d("Tobias", "we got the webservice conncted");
+            Log.d("Tobias", webServiceBinder.hello());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+
+    public void onClickTobias(View Button){
+        Log.d("Tobias","got the click on test");
+        Handler myHandler = new Handler();
+        WebRequestRunnable myRunnable = new WebRequestRunnable();
+        webServiceBinder.requestHelloWorld("Tobias", myHandler, myRunnable);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        bindService(new Intent(this, ZeitfadenWebService.class), webServiceConnection, Context.BIND_AUTO_CREATE);
 
     }
 
