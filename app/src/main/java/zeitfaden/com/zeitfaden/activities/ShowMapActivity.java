@@ -100,8 +100,6 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     @Override
     protected void onDestroy() {
 
-        unbindService(mGeoPositionServiceConnection);
-        unbindService(mMusicTrackingServiceConnection);
 
         // no, we do not want to give up any of our services.
         /*

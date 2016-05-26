@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zeitfaden.com.zeitfaden.DatabaseManager;
-import zeitfaden.com.zeitfaden.authentication.AccountGeneral;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -206,19 +205,8 @@ public class ZeitfadenServerService extends IntentService {
 
         String access_token = ""; // = settings.getString("access_token", "");
 
-        mAccountManager = AccountManager.get(getBaseContext());
-        Account myAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
-        Account currentAccount = myAccounts[0];
 
-        try {
-            access_token = mAccountManager.blockingGetAuthToken(currentAccount, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
-        } catch (OperationCanceledException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (AuthenticatorException e) {
-            e.printStackTrace();
-        }
+        //access_token = mAccountManager.blockingGetAuthToken(currentAccount, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
 
         Log.d("Tobias","this is the access_token we are goona use to upload " + access_token);
 
@@ -280,8 +268,6 @@ public class ZeitfadenServerService extends IntentService {
                 }
                 else {
                     Log.d("Tobias", "WE had an upload error, trying to incvaldiate and renew the token:");
-                    mAccountManager.invalidateAuthToken(currentAccount.type, access_token);
-                    access_token = mAccountManager.blockingGetAuthToken(currentAccount, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
                     Log.d("Tobias","this is our new token: " + access_token);
                 }
             }
@@ -290,10 +276,6 @@ public class ZeitfadenServerService extends IntentService {
             }
             catch (IOException e1){
                 Log.d("Tobias","caught some excepotnk");
-            } catch (AuthenticatorException e) {
-                e.printStackTrace();
-            } catch (OperationCanceledException e) {
-                e.printStackTrace();
             }
 
         }
