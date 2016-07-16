@@ -29,6 +29,28 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+
+        <!--Auth0 Lock-->
+        <activity
+            android:name="com.auth0.lock.LockActivity"
+            android:theme="@style/Lock.Theme"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="a0u2lkyycekryx0gk8jazdy7c8klqllzpq" android:host="tobiga.eu.auth0.com"/>
+            </intent-filter>
+        </activity>
+        <meta-data android:name="com.auth0.lock.client-id" android:value="U2lkyYcEKRyx0GK8JAZdy7C8klQLLZPq"/>
+        <meta-data android:name="com.auth0.lock.domain-url" android:value="tobiga.eu.auth0.com"/>
+        <!--Auth0 Lock End-->
+
+
+
+
+
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name" >

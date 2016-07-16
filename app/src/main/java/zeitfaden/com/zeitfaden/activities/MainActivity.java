@@ -1,11 +1,14 @@
 package zeitfaden.com.zeitfaden.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,12 +19,18 @@ import android.view.View;
 import zeitfaden.com.zeitfaden.R;
 import zeitfaden.com.zeitfaden.services.ZeitfadenServerService;
 
+import com.auth0.core.Token;
+import com.auth0.core.UserProfile;
+import com.auth0.lock.Lock;
+import com.auth0.lock.LockActivity;
+import com.auth0.lock.LockContext;
+import com.auth0.lock.LockProvider;
 import com.zeitfaden.services.web.WebRequestRunnable;
 import com.zeitfaden.services.web.ZeitfadenWebService;
 import com.zeitfaden.services.web.ZeitfadenWebServiceBinder;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity  implements LockProvider {
 
     ZeitfadenWebServiceBinder webServiceBinder;
 
@@ -47,11 +56,62 @@ public class MainActivity extends ActionBarActivity {
         webServiceBinder.requestHelloWorld("Tobias", myHandler, myRunnable);
     }
 
+    private Lock lock;
+
+
+    @Override
+    public Lock getLock() {
+        return lock;
+    }
+
+    private LocalBroadcastManager broadcastManager;
+
+    private BroadcastReceiver authenticationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            UserProfile profile = intent.getParcelableExtra(Lock.AUTHENTICATION_ACTION_PROFILE_PARAMETER);
+            Token token = intent.getParcelableExtra(Lock.AUTHENTICATION_ACTION_TOKEN_PARAMETER);
+            Log.i("Tobias-Auth0", "User " + profile.getName() + " logged in");
+        }
+    };
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        broadcastManager.unregisterReceiver(authenticationReceiver);
+    }
+
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            UserProfile userProfile = intent.getParcelableExtra(Lock.AUTHENTICATION_ACTION_PROFILE_PARAMETER);
+            Token accessToken = intent.getParcelableExtra(Lock.AUTHENTICATION_ACTION_TOKEN_PARAMETER);
+            Log.i("Tobias Auth0", "User " + userProfile.getName() + " logged in");
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bindService(new Intent(this, ZeitfadenWebService.class), webServiceConnection, Context.BIND_AUTO_CREATE);
+
+
+
+
+        LockContext.configureLock(
+                new Lock.Builder()
+                        .loadFromApplication(this.getApplication())
+                        .closable(true));
+
+        final LocalBroadcastManager broadcastManager =
+                LocalBroadcastManager.getInstance(getApplicationContext());
+        broadcastManager.registerReceiver(receiver, new IntentFilter(Lock.AUTHENTICATION_ACTION));
+
+
 
     }
 
@@ -104,5 +164,16 @@ public class MainActivity extends ActionBarActivity {
     public void onClickUploadStations(View Button){
         ZeitfadenServerService.startActionUpload(this);
     }
+
+
+    public void onClickAuth0Login(View Button) {
+        Intent lockIntent = new Intent(this, LockActivity.class);
+        startActivity(lockIntent);
+    }
+
+
+
+
+
 
 }

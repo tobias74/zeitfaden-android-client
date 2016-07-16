@@ -12,12 +12,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test new service"
-        android:onClick="onClickTobias"
+        android:text="Test Auth0 Login"
+        android:onClick="onClickAuth0Login"
         android:id="@+id/buttonTestService"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="72dp" />
+        android:layout_marginTop="20dp" />
 
 
     <Button
