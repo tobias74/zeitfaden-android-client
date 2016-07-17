@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -89,7 +91,15 @@ public class MainActivity extends ActionBarActivity  implements LockProvider {
             UserProfile userProfile = intent.getParcelableExtra(Lock.AUTHENTICATION_ACTION_PROFILE_PARAMETER);
             Token accessToken = intent.getParcelableExtra(Lock.AUTHENTICATION_ACTION_TOKEN_PARAMETER);
             Log.i("Tobias Auth0", "User " + userProfile.getName() + " logged in");
+            Log.i("Tobias-Auth0", "This is the idToken" + accessToken.getIdToken());
 
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("idToken", accessToken.getIdToken());
+            editor.commit();
+
+
+            ZeitfadenServerService.startActionNewHello(MainActivity.this);
         }
     };
 

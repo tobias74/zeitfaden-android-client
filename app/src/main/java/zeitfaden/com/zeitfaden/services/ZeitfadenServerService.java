@@ -33,6 +33,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import zeitfaden.com.zeitfaden.DatabaseManager;
 
 /**
@@ -49,6 +52,7 @@ public class ZeitfadenServerService extends IntentService {
     private static final String ACTION_BAZ = "zeitfaden.com.zeitfaden.action.BAZ";
     private static final String ACTION_UPLOAD = "zeitfaden.com.zeitfaden.action.UPLOAD";
     private static final String ACTION_LOGIN = "zeitfaden.com.zeitfaden.action.LOGIN";
+    private static final String ACTION_TESTHELLO = "zeitfaden.com.zeitfaden.action.TESTHELLO";
 
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "zeitfaden.com.zeitfaden.extra.PARAM1";
@@ -105,6 +109,13 @@ public class ZeitfadenServerService extends IntentService {
 
     }
 
+    public static void startActionNewHello(Context context) {
+        Intent intent = new Intent(context, ZeitfadenServerService.class);
+        intent.setAction(ACTION_TESTHELLO);
+        context.startService(intent);
+
+    }
+
     public static void startActionLogin(Context context, String email, String password){
         Intent intent = new Intent(context, ZeitfadenServerService.class);
         intent.setAction(ACTION_LOGIN);
@@ -137,10 +148,40 @@ public class ZeitfadenServerService extends IntentService {
                 handleActionUpload();
             } else if (ACTION_LOGIN.equals(action)) {
                 handleActionLogin(intent.getStringExtra("email"), intent.getStringExtra("password"));
+            } else if (ACTION_TESTHELLO.equals(action)) {
+                handleNewHello();
             }
         }
     }
 
+
+
+
+    private void handleNewHello(){
+        Log.i("Tobias","within the handle...");
+        Log.i("Tobias","now in the webserncie sending the new hello world.");
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String idToken = settings.getString("idToken", "");
+
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://test.zeitfaden.com/api/user/authenticated")
+                .header("Authorization", "Bearer " + idToken)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            Log.i("Tobias http request",response.message());
+            Log.i("Tobias",response.body().string());
+        } catch (IOException e) {
+            Log.i("Tobias Exception","Somethign wrong inthe htttp reuqest");
+            e.printStackTrace();
+        }
+
+    }
     /**
      * Handle action Foo in the provided background thread with the provided
      * parameters.
@@ -195,7 +236,6 @@ public class ZeitfadenServerService extends IntentService {
 
 
     }
-
 
 
     private void handleActionUpload(){
