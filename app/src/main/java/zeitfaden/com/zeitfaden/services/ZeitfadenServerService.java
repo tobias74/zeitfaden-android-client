@@ -33,8 +33,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import zeitfaden.com.zeitfaden.DatabaseManager;
 
@@ -58,7 +60,7 @@ public class ZeitfadenServerService extends IntentService {
     private static final String EXTRA_PARAM1 = "zeitfaden.com.zeitfaden.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "zeitfaden.com.zeitfaden.extra.PARAM2";
 
-    private static final String ZEITFADEN_BASE_URL = "http://api.zeitfaden.com";
+    private static final String ZEITFADEN_BASE_URL = "https://api.zeitfaden.com";
     private static final String ZEITFADEN_USER_LOGIN = "/user/login";
     private static final String ZEITFADEN_INSERT_STATION = "/station/insert";
     private static final String ZEITFADEN_LOGIN_OAUTH2 = "/OAuth2/token";
@@ -239,16 +241,13 @@ public class ZeitfadenServerService extends IntentService {
 
 
     private void handleActionUpload(){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String idToken = settings.getString("idToken", "");
 
+        Log.d("Tobias","this is the idToken we are goona use to upload " + idToken);
 
-        //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        OkHttpClient client = new OkHttpClient();
 
-        String access_token = ""; // = settings.getString("access_token", "");
-
-
-        //access_token = mAccountManager.blockingGetAuthToken(currentAccount, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
-
-        Log.d("Tobias","this is the access_token we are goona use to upload " + access_token);
 
         DatabaseManager myDatabaseManager = DatabaseManager.getInstance(this);
 
@@ -270,53 +269,42 @@ public class ZeitfadenServerService extends IntentService {
             Long endTimestamp = stationCursor.getLong(8);
 
 
-            HttpPost httpPost = new HttpPost(ZEITFADEN_BASE_URL + ZEITFADEN_INSERT_STATION);
 
-            Log.d("Tobias", "trying3 to upload here with start latitude " + startLatitude);
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("action", "login")
+                    .add("description", String.valueOf(description))
+                    .add("startLatitude", String.valueOf(startLatitude))
+                    .add("startLongitude", String.valueOf(startLongitude))
+                    .add("endLatitude", String.valueOf(endLatitude))
+                    .add("endLongitude", String.valueOf(endLongitude))
+                    .add("startTimestamp", String.valueOf(startTimestamp))
+                    .add("endTimestamp", String.valueOf(endTimestamp))
+                    .add("publishStatus", String.valueOf(publishStatus))
+                    .build();
 
-            List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+            Request request = new Request.Builder()
+                    .url(ZEITFADEN_BASE_URL + ZEITFADEN_INSERT_STATION)
+                    .header("Authorization", "Bearer " + idToken)
+                    .post(requestBody)
+                    .build();
 
-
-            postParameters.add(new BasicNameValuePair("description", String.valueOf(description)));
-            postParameters.add(new BasicNameValuePair("startLatitude", String.valueOf(startLatitude)));
-            postParameters.add(new BasicNameValuePair("startLongitude", String.valueOf(startLongitude)));
-            postParameters.add(new BasicNameValuePair("endLatitude", String.valueOf(endLatitude)));
-            postParameters.add(new BasicNameValuePair("endLongitude", String.valueOf(endLongitude)));
-            postParameters.add(new BasicNameValuePair("startTimestamp", String.valueOf(startTimestamp)));
-            postParameters.add(new BasicNameValuePair("endTimestamp", String.valueOf(endTimestamp)));
-            postParameters.add(new BasicNameValuePair("publishStatus", String.valueOf(publishStatus)));
-            postParameters.add(new BasicNameValuePair("access_token", access_token));
-
-            try{
-                httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
-            }
-            catch (UnsupportedEncodingException e2){
-
-            }
-
-            Log.d("Tobias", "trying4 to upload here.");
 
             try {
-                Log.d("Tobias", "trying5 to upload here.");
-
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpResponse uploadResponse = client.execute(httpPost);
-
-                Log.d("Tobias", "trying6 to upload here.");
-                if (uploadResponse.getStatusLine().getStatusCode() == 200){
+                Response response = client.newCall(request).execute();
+                Log.i("Tobias http request",response.message());
+                Log.i("Tobias",response.body().string());
+                if (response.code() == 200){
                     myDatabaseManager.getWritableDatabase().delete("stations","_id=?",new String[]{myId});
                 }
                 else {
-                    Log.d("Tobias", "WE had an upload error, trying to incvaldiate and renew the token:");
-                    Log.d("Tobias","this is our new token: " + access_token);
+                    Log.d("Tobias", "WE had an upload error");
                 }
+            } catch (IOException e) {
+                Log.i("Tobias Exception","Somethign wrong inthe htttp reuqest");
+                e.printStackTrace();
             }
-            catch (ClientProtocolException e1){
 
-            }
-            catch (IOException e1){
-                Log.d("Tobias","caught some excepotnk");
-            }
+
 
         }
 
