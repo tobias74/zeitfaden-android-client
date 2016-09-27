@@ -1,13 +1,19 @@
 package zeitfaden.com.zeitfaden.activities;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -196,18 +202,47 @@ public class ShowMapActivity extends ActionBarActivity implements OnMapReadyCall
     }
 
 
-    public void onClickStartLocationRecording(View button){
-        Log.d("Tobias","got the click on start");
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 123) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted.
+                startTracking();
+            } else {
+                Log.d("Tobias","user refused location fine rights");
 
-        //PowerManager mgr = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        //wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
-        //wakeLock.acquire();
+                // User refused to grant permission.
+            }
+        }
+    }
 
+    protected void startTracking() {
         final Intent geoIntent = new Intent(this, GeoPositionService.class);
         startService(geoIntent);
 
         final Intent musicIntent = new Intent(this, MusicTrackingService.class);
         startService(musicIntent);
+
+    }
+
+    public void onClickStartLocationRecording(View button){
+        Log.d("Tobias","got the click on start");
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    123);
+        } else {
+            startTracking();
+        }
+
+
+        //PowerManager mgr = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        //wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        //wakeLock.acquire();
+
 
 
 

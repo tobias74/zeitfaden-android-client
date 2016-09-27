@@ -100,7 +100,9 @@ public class MusicTrackingService extends Service implements
     @Override
     public void onConnected(Bundle connectionHint) {
         myLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.d("Tobias","this is the location from the music service " + myLocation.toString());
+        if (myLocation != null) {
+            Log.d("Tobias","this is the location from the music service " + myLocation.toString());
+        }
 
     }
 

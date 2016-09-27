@@ -148,8 +148,6 @@ public class ZeitfadenServerService extends IntentService {
                 handleActionBaz(param1, param2);
             } else if (ACTION_UPLOAD.equals(action)) {
                 handleActionUpload();
-            } else if (ACTION_LOGIN.equals(action)) {
-                handleActionLogin(intent.getStringExtra("email"), intent.getStringExtra("password"));
             } else if (ACTION_TESTHELLO.equals(action)) {
                 handleNewHello();
             }
@@ -170,7 +168,7 @@ public class ZeitfadenServerService extends IntentService {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://test.zeitfaden.com/api/user/authenticated")
+                .url("https://www.zeitfaden.com/api/user/authenticated")
                 .header("Authorization", "Bearer " + idToken)
                 .build();
 
@@ -202,43 +200,6 @@ public class ZeitfadenServerService extends IntentService {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private void handleActionLogin(String email, String password){
-        try {
-
-            DefaultHttpClient client = new DefaultHttpClient();
-            String loginUrl = ZEITFADEN_BASE_URL + ZEITFADEN_LOGIN_OAUTH2;
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
-            nameValuePairs.add(new BasicNameValuePair("username",email));
-            nameValuePairs.add(new BasicNameValuePair("password",password));
-            nameValuePairs.add(new BasicNameValuePair("grant_type","password"));
-            nameValuePairs.add(new BasicNameValuePair("client_id","5612d33d6987c887945"));
-            HttpPost loginRequest = new HttpPost(loginUrl);
-
-            loginRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse loginResponse = client.execute(loginRequest);
-
-            String loginResponseString = EntityUtils.toString(loginResponse.getEntity());
-            Log.d("Tobias", loginResponseString);
-            JSONObject json = new JSONObject(loginResponseString);
-
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString("access_token", json.getString("access_token"));
-            editor.putString("refresh_token", json.getString("refresh_token"));
-            editor.commit();
-
-        }
-        catch (IOException e){
-            Log.e("Tobias","something wrong here.");
-        }
-        catch (JSONException el){
-            Log.d("Tobias", "json expcetion");
-        }
-
-
-
-    }
-
 
     private void handleActionUpload(){
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -256,16 +217,15 @@ public class ZeitfadenServerService extends IntentService {
 
         while (stationCursor.moveToNext()){
             Log.d("Tobias", stationCursor.getString(0));
-            Log.d("Tobias", stationCursor.getString(1));
 
             String myId = stationCursor.getString(0);
-            String publishStatus = "public"; //stationCursor.getString(2);
-            Double startLatitude = stationCursor.getDouble(3);
-            Double endLatitude = stationCursor.getDouble(4);
-            Double startLongitude = stationCursor.getDouble(5);
-            Double endLongitude = stationCursor.getDouble(6);
-            Long startTimestamp = stationCursor.getLong(7);
-            Long endTimestamp = stationCursor.getLong(8);
+            String publishStatus = "public"; //stationCursor.getString(1);
+            Double startLatitude = stationCursor.getDouble(2);
+            Double endLatitude = stationCursor.getDouble(3);
+            Double startLongitude = stationCursor.getDouble(4);
+            Double endLongitude = stationCursor.getDouble(5);
+            Long startTimestamp = stationCursor.getLong(6);
+            Long endTimestamp = stationCursor.getLong(7);
 
 
 

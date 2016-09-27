@@ -13,7 +13,7 @@ import android.util.Log;
 public class DatabaseManager extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "zeitfaden.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
     private static DatabaseManager sINSTANCE;
     private static Object sLOCK;
 
@@ -26,9 +26,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
         "start_longitude REAL, " +
         "end_longitude REAL, " +
         "start_timestamp INTEGER, " +
-        "end_timestamp INTEGER, " +
-        "media_file_path TEXT" +
+        "end_timestamp INTEGER " +
         ");";
+
+    public static final String SQL_DELETE_STATIONS_TABLE = "DROP TABLE IF EXISTS stations;";
 
 
     public DatabaseManager(Context context) {
@@ -55,7 +56,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public void storeStation(Station myStation){
         Log.d("Tobias", "inserting new station in DatabaseMansger");
 
-        SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (description, start_latitude, start_longitude, end_latitude, end_longitude, start_timestamp, end_timestamp, publish_status) VALUES (?,?,?,?,?,?,?,?)");
+        SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (start_latitude, start_longitude, end_latitude, end_longitude, start_timestamp, end_timestamp, publish_status) VALUES (?,?,?,?,?,?,?)");
 
         stationInsert.bindDouble(1, myStation.getStartLatitude());
         stationInsert.bindDouble(2, myStation.getStartLongitude());
@@ -82,8 +83,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-        //Log.d("Tobias","now dropping the old table.");
-        //db.execSQL("DROP TABLE stations");
+        Log.d("Tobias","now dropping the old table.");
+        db.execSQL(DatabaseManager.SQL_DELETE_STATIONS_TABLE);
         onCreate(db);
     }
 
