@@ -46,8 +46,8 @@ public class GeoPositionService extends Service implements LocationListener,
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
-    private static final long UPDATE_INTERVAL = 20000;
-    private static final long FASTEST_INTERVAL = 10000;
+    private static final long UPDATE_INTERVAL = 15000;
+    private static final long FASTEST_INTERVAL = 5000;
 
 
 
@@ -93,7 +93,7 @@ public class GeoPositionService extends Service implements LocationListener,
 
         Log.d("Tobias", "distance between old and new " + Float.toString(distanceBetweenOldAndNew));
 
-        if (distanceBetweenOldAndNew > 2.5 * accuracy) {
+        if (distanceBetweenOldAndNew > 2.0 * accuracy) {
             return true;
         } else {
             return false;
