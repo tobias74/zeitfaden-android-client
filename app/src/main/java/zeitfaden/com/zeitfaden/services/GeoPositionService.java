@@ -70,7 +70,6 @@ public class GeoPositionService extends Service implements LocationListener,
         currentTimestamp = System.currentTimeMillis()/1000;
 
         Station myStation = new Station();
-        myStation.setDescription("#newapp");
         myStation.setStartLatitude(previousLatitude);
         myStation.setStartLongitude(previousLongitude);
         myStation.setEndLatitude(location.getLatitude());
@@ -88,28 +87,53 @@ public class GeoPositionService extends Service implements LocationListener,
 
     }
 
+    private boolean isAccurateEnough(Location newLocation) {
+        float accuracy = newLocation.getAccuracy();
+        float distanceBetweenOldAndNew = newLocation.distanceTo(myLocation);
+
+        Log.d("Tobias", "distance between old and new " + Float.toString(distanceBetweenOldAndNew));
+
+        if (distanceBetweenOldAndNew > 2.5 * accuracy) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     @Override
-    public void onLocationChanged(Location location){
+    public void onLocationChanged(Location newLocation){
         Log.d("Tobias","location changed oLocationChanged handelr got called.");
-        if (location != null) {
-            myLocation = location;
+        if (newLocation != null) {
 
-            recordNewLocation(location);
+            Log.d("Tobias", "this is the acuracy:");
+            Log.d("Tobias", Float.toString(newLocation.getAccuracy()));
+
+            if ((myLocation == null) || (isAccurateEnough(newLocation))) {
+                myLocation = newLocation;
+
+                Log.d("Tobias", "we record!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 
-            if (activityCallbackHandler != null){
-                final Bundle bundle = new Bundle();
-                bundle.putParcelable("location",myLocation);
+
+                recordNewLocation(myLocation);
 
 
-                final Message msg =  new Message();
-                msg.setData(bundle);
+                if (activityCallbackHandler != null){
+                    final Bundle bundle = new Bundle();
+                    bundle.putParcelable("location",myLocation);
 
-                activityCallbackHandler.sendMessage(msg);
 
+                    final Message msg =  new Message();
+                    msg.setData(bundle);
+
+                    activityCallbackHandler.sendMessage(msg);
+
+                }
+
+            } else {
+                Log.d("Tobias", "no, we did not record, that is also a good thing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
-
-
 
         }
 

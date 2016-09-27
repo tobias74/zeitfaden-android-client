@@ -40,10 +40,10 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="a0u2lkyycekryx0gk8jazdy7c8klqllzpq" android:host="tobiga.eu.auth0.com"/>
+                <data android:scheme="a05nvb8vb8m2hqlsipfzpku9v7k3hzgtiy" android:host="tobiga.eu.auth0.com"/>
             </intent-filter>
         </activity>
-        <meta-data android:name="com.auth0.lock.client-id" android:value="U2lkyYcEKRyx0GK8JAZdy7C8klQLLZPq"/>
+        <meta-data android:name="com.auth0.lock.client-id" android:value="5nVb8vB8m2hqLSIpfZPKU9V7K3hZgTIy"/>
         <meta-data android:name="com.auth0.lock.domain-url" android:value="tobiga.eu.auth0.com"/>
         <!--Auth0 Lock End-->
 

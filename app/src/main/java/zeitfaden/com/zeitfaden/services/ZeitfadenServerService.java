@@ -60,7 +60,7 @@ public class ZeitfadenServerService extends IntentService {
     private static final String EXTRA_PARAM1 = "zeitfaden.com.zeitfaden.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "zeitfaden.com.zeitfaden.extra.PARAM2";
 
-    private static final String ZEITFADEN_BASE_URL = "https://api.zeitfaden.com";
+    private static final String ZEITFADEN_BASE_URL = "https://www.zeitfaden.com/api";
     private static final String ZEITFADEN_USER_LOGIN = "/user/login";
     private static final String ZEITFADEN_INSERT_STATION = "/station/insert";
     private static final String ZEITFADEN_LOGIN_OAUTH2 = "/OAuth2/token";
@@ -259,7 +259,6 @@ public class ZeitfadenServerService extends IntentService {
             Log.d("Tobias", stationCursor.getString(1));
 
             String myId = stationCursor.getString(0);
-            String description = stationCursor.getString(1);
             String publishStatus = "public"; //stationCursor.getString(2);
             Double startLatitude = stationCursor.getDouble(3);
             Double endLatitude = stationCursor.getDouble(4);
@@ -272,7 +271,6 @@ public class ZeitfadenServerService extends IntentService {
 
             RequestBody requestBody = new FormBody.Builder()
                     .add("action", "login")
-                    .add("description", String.valueOf(description))
                     .add("startLatitude", String.valueOf(startLatitude))
                     .add("startLongitude", String.valueOf(startLongitude))
                     .add("endLatitude", String.valueOf(endLatitude))

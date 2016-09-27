@@ -20,7 +20,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public static final String SQL_CREATE_STATIONS_TABLE =
         "CREATE TABLE stations (" +
         "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-        "description TEXT, " +
         "publish_status TEXT, " +
         "start_latitude REAL, " +
         "end_latitude REAL, " +
@@ -58,14 +57,13 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (description, start_latitude, start_longitude, end_latitude, end_longitude, start_timestamp, end_timestamp, publish_status) VALUES (?,?,?,?,?,?,?,?)");
 
-        stationInsert.bindString(1, myStation.getDescription());
-        stationInsert.bindDouble(2, myStation.getStartLatitude());
-        stationInsert.bindDouble(3, myStation.getStartLongitude());
-        stationInsert.bindDouble(4, myStation.getEndLatitude());
-        stationInsert.bindDouble(5, myStation.getEndLongitude());
-        stationInsert.bindLong(6, myStation.getStartTimestamp());
-        stationInsert.bindLong(7, myStation.getEndTimestamp());
-        stationInsert.bindString(8, myStation.getPublishStatus());
+        stationInsert.bindDouble(1, myStation.getStartLatitude());
+        stationInsert.bindDouble(2, myStation.getStartLongitude());
+        stationInsert.bindDouble(3, myStation.getEndLatitude());
+        stationInsert.bindDouble(4, myStation.getEndLongitude());
+        stationInsert.bindLong(5, myStation.getStartTimestamp());
+        stationInsert.bindLong(6, myStation.getEndTimestamp());
+        stationInsert.bindString(7, myStation.getPublishStatus());
 
 
         long id = stationInsert.executeInsert();
