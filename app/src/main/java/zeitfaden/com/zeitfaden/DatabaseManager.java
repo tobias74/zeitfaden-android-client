@@ -13,7 +13,7 @@ import android.util.Log;
 public class DatabaseManager extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "zeitfaden.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static DatabaseManager sINSTANCE;
     private static Object sLOCK;
 
@@ -21,12 +21,13 @@ public class DatabaseManager extends SQLiteOpenHelper {
         "CREATE TABLE stations (" +
         "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
         "publish_status TEXT, " +
-        "start_latitude REAL, " +
-        "end_latitude REAL, " +
-        "start_longitude REAL, " +
-        "end_longitude REAL, " +
-        "start_timestamp INTEGER, " +
-        "end_timestamp INTEGER " +
+        "latitude REAL, " +
+        "longitude REAL, " +
+        "speed REAL, " +
+        "altitude REAL, " +
+        "accuracy REAL, " +
+        "tour_id TEXT, " +
+        "timestamp INTEGER " +
         ");";
 
     public static final String SQL_DELETE_STATIONS_TABLE = "DROP TABLE IF EXISTS stations;";
@@ -56,15 +57,16 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public void storeStation(Station myStation){
         Log.d("Tobias", "inserting new station in DatabaseMansger");
 
-        SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (start_latitude, start_longitude, end_latitude, end_longitude, start_timestamp, end_timestamp, publish_status) VALUES (?,?,?,?,?,?,?)");
+        SQLiteStatement stationInsert = this.getWritableDatabase().compileStatement("INSERT INTO stations (latitude, longitude, timestamp, publish_status, speed, accuracy, altitude, tour_id) VALUES (?,?,?,?,?,?,?,?)");
 
-        stationInsert.bindDouble(1, myStation.getStartLatitude());
-        stationInsert.bindDouble(2, myStation.getStartLongitude());
-        stationInsert.bindDouble(3, myStation.getEndLatitude());
-        stationInsert.bindDouble(4, myStation.getEndLongitude());
-        stationInsert.bindLong(5, myStation.getStartTimestamp());
-        stationInsert.bindLong(6, myStation.getEndTimestamp());
-        stationInsert.bindString(7, myStation.getPublishStatus());
+        stationInsert.bindDouble(1, myStation.latitude);
+        stationInsert.bindDouble(2, myStation.longitude);
+        stationInsert.bindLong(3, myStation.timestamp);
+        stationInsert.bindString(4, myStation.publishStatus);
+        stationInsert.bindDouble(5, myStation.speed);
+        stationInsert.bindDouble(6, myStation.accuracy);
+        stationInsert.bindDouble(7, myStation.altitude);
+        stationInsert.bindString(8, myStation.tourId);
 
 
         long id = stationInsert.executeInsert();

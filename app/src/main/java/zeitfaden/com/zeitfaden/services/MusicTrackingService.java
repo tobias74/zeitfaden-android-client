@@ -57,6 +57,7 @@ public class MusicTrackingService extends Service implements
         currentTimestamp = System.currentTimeMillis()/1000;
 
         Station myStation = new Station();
+        /*
         myStation.setDescription("#listeningTo {title: " + bundle.getString("track") + "} by {artist: " + bundle.getString("artist") + "} from {album: " + bundle.getString("album") + "}");
         myStation.setStartLatitude(location.getLatitude());
         myStation.setStartLongitude(location.getLongitude());
@@ -65,7 +66,9 @@ public class MusicTrackingService extends Service implements
         myStation.setPublishStatus("public");
         myStation.setStartTimestamp(currentTimestamp);
         myStation.setEndTimestamp(currentTimestamp);
-        Log.d("Tobias","#listeningTo {title: " + bundle.getString("track") + "} by {artist: " + bundle.getString("artist") + "} from {album: " + bundle.getString("album") + "}" + "music-stations start latitude " + myStation.getStartLatitude());
+        */
+
+        //Log.d("Tobias","#listeningTo {title: " + bundle.getString("track") + "} by {artist: " + bundle.getString("artist") + "} from {album: " + bundle.getString("album") + "}" + "music-stations start latitude " + myStation.getStartLatitude());
 
         myDatabaseManager.storeStation(myStation);
 

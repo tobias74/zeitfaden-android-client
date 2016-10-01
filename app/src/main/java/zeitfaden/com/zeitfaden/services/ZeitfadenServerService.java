@@ -219,26 +219,20 @@ public class ZeitfadenServerService extends IntentService {
             Log.d("Tobias", stationCursor.getString(0));
 
             String myId = stationCursor.getString(0);
-            String publishStatus = "public"; //stationCursor.getString(1);
-            Double startLatitude = stationCursor.getDouble(2);
-            Double endLatitude = stationCursor.getDouble(3);
-            Double startLongitude = stationCursor.getDouble(4);
-            Double endLongitude = stationCursor.getDouble(5);
-            Long startTimestamp = stationCursor.getLong(6);
-            Long endTimestamp = stationCursor.getLong(7);
-
-
 
             RequestBody requestBody = new FormBody.Builder()
-                    .add("action", "login")
-                    .add("startLatitude", String.valueOf(startLatitude))
-                    .add("startLongitude", String.valueOf(startLongitude))
-                    .add("endLatitude", String.valueOf(endLatitude))
-                    .add("endLongitude", String.valueOf(endLongitude))
-                    .add("startTimestamp", String.valueOf(startTimestamp))
-                    .add("endTimestamp", String.valueOf(endTimestamp))
-                    .add("publishStatus", String.valueOf(publishStatus))
+                    .add("publishStatus", stationCursor.getString(1))
+                    .add("latitude", String.valueOf(stationCursor.getDouble(2)))
+                    .add("longitude", String.valueOf(stationCursor.getDouble(3)))
+                    .add("speed", String.valueOf(stationCursor.getDouble(4)))
+                    .add("altitude", String.valueOf(stationCursor.getDouble(5)))
+                    .add("accuracy", String.valueOf(stationCursor.getDouble(6)))
+                    .add("tourId", String.valueOf(stationCursor.getString(7)))
+                    .add("timestamp", String.valueOf(stationCursor.getLong(8)))
                     .build();
+
+            Log.d("Tobias","This is my tour Id " + stationCursor.getString(7));
+
 
             Request request = new Request.Builder()
                     .url(ZEITFADEN_BASE_URL + ZEITFADEN_INSERT_STATION)

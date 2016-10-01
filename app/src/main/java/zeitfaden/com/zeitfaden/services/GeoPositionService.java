@@ -22,6 +22,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
+import java.util.Random;
+
 import zeitfaden.com.zeitfaden.DatabaseManager;
 import zeitfaden.com.zeitfaden.Station;
 
@@ -40,13 +42,15 @@ public class GeoPositionService extends Service implements LocationListener,
     private double previousLatitude = 0;
     private double previousLongitude = 0;
 
+    private String currentTourId = "";
+
 
     public final IBinder mGpsBinder = new GeoPositionServiceBinder();
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
-    private static final long UPDATE_INTERVAL = 15000;
+    private static final long UPDATE_INTERVAL = 60000;
     private static final long FASTEST_INTERVAL = 5000;
 
 
@@ -56,34 +60,21 @@ public class GeoPositionService extends Service implements LocationListener,
 
 
     private void recordNewLocation(Location location){
-        if (previousLatitude == 0)
-        {
-            previousLatitude = location.getLatitude();
-            previousLongitude = location.getLongitude();
-        }
 
-        if (previousTimestamp == 0)
-        {
-            previousTimestamp = System.currentTimeMillis()/1000;
-        }
-
-        currentTimestamp = System.currentTimeMillis()/1000;
+        // currentTimestamp = System.currentTimeMillis()/1000;
 
         Station myStation = new Station();
-        myStation.setStartLatitude(previousLatitude);
-        myStation.setStartLongitude(previousLongitude);
-        myStation.setEndLatitude(location.getLatitude());
-        myStation.setEndLongitude(location.getLongitude());
-        myStation.setPublishStatus("public");
-        myStation.setStartTimestamp(previousTimestamp);
-        myStation.setEndTimestamp(currentTimestamp);
-        Log.d("Tobias","stations start latitude " + myStation.getStartLatitude());
+        myStation.latitude = location.getLatitude();
+        myStation.longitude = location.getLongitude();
+        myStation.publishStatus = "public";
+        myStation.timestamp = location.getTime()/1000;
+        myStation.accuracy = location.getAccuracy();
+        myStation.altitude = location.getAltitude();
+        myStation.speed = location.getSpeed();
+        myStation.tourId = currentTourId;
 
         myDatabaseManager.storeStation(myStation);
 
-        previousLatitude = location.getLatitude();
-        previousLongitude = location.getLongitude();
-        previousTimestamp = currentTimestamp;
 
     }
 
@@ -93,7 +84,7 @@ public class GeoPositionService extends Service implements LocationListener,
 
         Log.d("Tobias", "distance between old and new " + Float.toString(distanceBetweenOldAndNew));
 
-        if (distanceBetweenOldAndNew > 2.0 * accuracy) {
+        if (distanceBetweenOldAndNew > 2.3 * accuracy) {
             return true;
         } else {
             return false;
@@ -153,6 +144,8 @@ public class GeoPositionService extends Service implements LocationListener,
         Log.d("Tobias", "short before the get instance method inside show map acitivty.");
         myDatabaseManager = DatabaseManager.getInstance(this);
 
+        Random r = new Random();
+        currentTourId = "tour_id_" + String.valueOf(System.currentTimeMillis());
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
